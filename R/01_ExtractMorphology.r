@@ -20,7 +20,7 @@ read_folder <- function(path) {
       cytoplasmic_stain_ratio = Intensity_Cytoplasm_Secondary_MedianIntensity / Spatial_Object_Spatial_LocalMeansIntensityCytoplasmSecondaryMeanIntensity200
     ) |> 
     filter(
-      cytoplasmic_stain_ratio > 1.5
+      cytoplasmic_stain_ratio > 2
     ) |> 
     arrange(-cytoplasmic_stain_ratio) |> 
     slice_head(n = 100) |> 
