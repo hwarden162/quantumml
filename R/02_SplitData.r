@@ -48,9 +48,9 @@ full_data_train_balanced |>
 full_data_test_balanced |> 
   filter(splitter) |> 
   select(-splitter) |> 
-  write_csv("./data/data_test_full")
+  write_csv("./data/data_test_full.csv")
 
 full_data_test_balanced |> 
   filter(!splitter) |> 
   select(-splitter) |> 
-  write_csv("./data/data_calib_full")
+  write_csv("./data/data_calib_full.csv")
