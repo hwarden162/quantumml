@@ -35,18 +35,22 @@ testing_min_class_num <- full_data_test |>
 full_data_test_balanced <- full_data_test |> 
   group_by(GOF) |> 
   slice_sample(n = testing_min_class_num) |> 
-  ungroup()
+  ungroup() |> 
+  mutate(
+    splitter = 1:n(),
+    splitter = splitter %% 2,
+    splitter = splitter |> as.logical()
+  )
 
 full_data_train_balanced |> 
   write_csv("./data/data_train_full.csv")
 
 full_data_test_balanced |> 
-  write_csv("./data/data_test_full.csv")
-
-full_data_train_balanced |> 
-  select(-path, -Meta_Global_Mask_Label) |> 
-  write_csv("./data/data_train_minimal.csv")
+  filter(splitter) |> 
+  select(-splitter) |> 
+  write_csv("./data/data_test_full")
 
 full_data_test_balanced |> 
-  select(-path, -Meta_Global_Mask_Label) |> 
-  write_csv("./data/data_test_minimal.csv")
+  filter(!splitter) |> 
+  select(-splitter) |> 
+  write_csv("./data/data_calib_full")
