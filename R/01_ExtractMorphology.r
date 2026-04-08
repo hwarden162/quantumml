@@ -32,7 +32,7 @@ read_folder <- function(path) {
   csr_iqr <- csr_uq - csr_lq
   return_df |> 
     filter(
-      cytoplasmic_stain_ratio > 2,
+      cytoplasmic_stain_ratio > 1.5,
       cytoplasmic_stain_ratio < csr_mean + 5*csr_iqr
     ) |> 
     arrange(-cytoplasmic_stain_ratio) |> 
