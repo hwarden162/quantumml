@@ -32,12 +32,8 @@ read_folder <- function(path) {
   csr_iqr <- csr_uq - csr_lq
   return_df |> 
     filter(
-<<<<<<< HEAD
-      cytoplasmic_stain_ratio > 1.5,
+      cytoplasmic_stain_ratio > 2,
       cytoplasmic_stain_ratio < csr_mean + 5*csr_iqr
-=======
-      cytoplasmic_stain_ratio > 2
->>>>>>> aba2b100b572f946c52d791d2eb819a85c4defce
     ) |> 
     arrange(-cytoplasmic_stain_ratio) |> 
     slice_head(n = 100) |> 
