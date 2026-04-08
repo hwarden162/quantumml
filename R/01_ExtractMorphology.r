@@ -12,27 +12,28 @@ read_folder <- function(path) {
   return_df <- morph_data |> 
     left_join(spati_data) |> 
     filter(
-      AreaShape_Nuclei_Mask_AxisMinorLength > 4.5,
+      AreaShape_Nuclei_Mask_AxisMinorLength > 6.25,
       Spatial_Nuclei_Spatial_LocalCounts100 > 5,
+      AreaShape_Nuclei_Mask_Area |> between(20, 200),
       !is.na(Spatial_Object_Spatial_LocalMeansIntensityCytoplasmSecondaryMeanIntensity200)
     ) |> 
     mutate(
       cytoplasmic_stain_ratio = Intensity_Cytoplasm_Secondary_MedianIntensity / Spatial_Object_Spatial_LocalMeansIntensityCytoplasmSecondaryMeanIntensity200
     )
   csr_mean <- return_df |> 
-    pull(csr) |> 
+    pull(cytoplasmic_stain_ratio) |> 
     mean()
   csr_uq <- return_df |> 
-    pull(csr) |> 
+    pull(cytoplasmic_stain_ratio) |> 
     quantile(0.75)
   csr_lq <- return_df |> 
-    pull(csr) |> 
+    pull(cytoplasmic_stain_ratio) |> 
     quantile(0.25)
   csr_iqr <- csr_uq - csr_lq
   return_df |> 
     filter(
       cytoplasmic_stain_ratio > 1.5,
-      cytoplasmic_stain_ration < csr_mean + 5*csr_iqr
+      cytoplasmic_stain_ratio < csr_mean + 5*csr_iqr
     ) |> 
     arrange(-cytoplasmic_stain_ratio) |> 
     slice_head(n = 100) |> 
@@ -114,40 +115,4 @@ raw_dirs |>
   bind_rows() |> 
   process_df() |> 
   write_csv("./data/full_data.csv")
-
-d <- raw_dirs[1] |> 
-  read_folder()
-
-
-
-csr_mean <- d |> 
-  pull(cytoplasmic_stain_ratio) |> 
-  mean()
-
-csr_uq <- d |> 
-  pull(cytoplasmic_stain_ratio) |> 
-  quantile(0.75)
-
-csr_lq <- d |> 
-  pull(cytoplasmic_stain_ratio) |> 
-  quantile(0.25)
-
-iqr <- csr_uq - csr_lq
-
-qcub <- csr_mean + 5*iqr
-qclb <- csr_mean - 5*iqr
-
-d |> 
-  mutate(
-    qc = cytoplasmic_stain_ratio |> between(qclb, qcub)
-  ) |> 
-  filter(
-    qc
-  ) |> 
-  ggplot() +
-  aes(
-    x = cytoplasmic_stain_ratio,
-    fill = qc
-  ) +
-  geom_histogram(bins = 400)
 
